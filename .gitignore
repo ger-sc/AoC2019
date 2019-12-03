@@ -2,3 +2,4 @@ bin
 obj
 launch.json
 tasks.json
+.idea
