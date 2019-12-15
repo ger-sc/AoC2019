@@ -31,7 +31,8 @@ namespace day15 {
       var droid = new Point(0, 0);
       var source = new Point(-1, -1);
       var dir = Direction.North;
-      var code = new IntCodeInterpreter(input, msg => Output.Enqueue(msg));
+      var cts = new CancellationTokenSource();
+      var code = new IntCodeInterpreter(input, msg => Output.Enqueue(msg), cts.Token);
       var t = new Thread(code.Runner);
       Map.Add(droid, ".");
       Distances.Add(droid, 0);
@@ -113,6 +114,7 @@ namespace day15 {
       } while (Map.Any(x => x.Value == "."));
 
       Console.Out.WriteLine(timer);
+      cts.Cancel();
     }
 
     private static IEnumerable<Point> GetNoWalls(Point p) {

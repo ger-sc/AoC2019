@@ -22,15 +22,16 @@ public class IntCodeInterpreter
   public ConcurrentQueue<BigInteger> _queue = new ConcurrentQueue<BigInteger>();
 
   private BigInteger RelativeBase = 0;
+  private readonly CancellationToken Token;
 
-
-  public IntCodeInterpreter(BigInteger[] opCode, Action<BigInteger> output)
+  public IntCodeInterpreter(BigInteger[] opCode, Action<BigInteger> output, CancellationToken token)
   {
     for (var i = 0; i < opCode.Length; i++)
     {
       OpCode[i] = opCode[i];
     };
     Output = output;
+    Token = token;
   }
 
   private BigInteger GetValueAt(BigInteger index)
@@ -73,7 +74,7 @@ public class IntCodeInterpreter
   public void Runner()
   {
     BigInteger index = 0;
-    while (OpCode[index] != 99)
+    while (OpCode[index] != 99 && !Token.IsCancellationRequested)
     {
       var instr = GetValueAt(index);
       var input1 = GetValueAt(index + 1);
@@ -103,7 +104,7 @@ public class IntCodeInterpreter
           break;
         case 3:
           BigInteger msg;
-          while (!_queue.TryDequeue(out msg))
+          while (!_queue.TryDequeue(out msg) && !Token.IsCancellationRequested)
           {
             Thread.Sleep(TimeSpan.FromMilliseconds(1));
           }
