@@ -36,7 +36,9 @@ namespace day16
                         sum+= input[z]*p[z];
                     }
                     output[i] = Math.Abs(sum % 10);
+                   
                 } 
+                Console.Out.WriteLine(string.Join("", output.Select(x => x.ToString())));
                 input = output;
                 step++;
             }
@@ -48,26 +50,19 @@ namespace day16
             var inputLength = inputString.Length * 10000;
             var realInput = GenerateRealInput(input);
             var offset = int.Parse(inputString.Substring(0, 7));
-            output = new int[inputLength];
+            output = realInput.Skip(offset).ToArray();
+            
+            
             step = 0;
             while (step < 100) {
-                for(var i = 0; i < inputLength; i++) {
-                    var p = GeneratePattern(i+1);
-                    var sum = 0;
-                    var iEnum = realInput.GetEnumerator();
-                    var pEnum = p.GetEnumerator();
-                    var iterator = 0;
-                    while(iEnum.MoveNext()) {
-                        pEnum.MoveNext();
-                        sum += iEnum.Current * pEnum.Current;
-                        iterator++;
-                    }
-                    output[i] = Math.Abs(sum % 10);
-                } 
-                realInput = output.AsEnumerable();
+                var sum = 0;
+                for(var i = output.Length - 1; i >= 0; i--) {
+                    sum += output[i];
+                    output[i] = sum % 10;
+                }
                 step++;
             }
-            Console.Out.WriteLine(string.Join("", output.Skip(offset).Take(8).Select(x => x.ToString())));
+            Console.Out.WriteLine(string.Join("", output.Take(8).Select(x => x.ToString())));
         }
 
         private static IEnumerable<int> GenerateRealInput(int[] input)
